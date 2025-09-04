@@ -13,9 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+
 @Component
 @Scope("prototype")
-public class BruteForcePanel extends CyberSecComponent<VBox> {
+public class BruteForcePanel extends CyberSecComponent {
+    
+    private final VBox root = new VBox();
     
     @FXML private ComboBox<String> profileCombo;
     @FXML private TextField targetField;
@@ -29,6 +33,19 @@ public class BruteForcePanel extends CyberSecComponent<VBox> {
     @Autowired private ProcessManager processManager;
     
     private ResultsPanel resultsPanel;
+    
+    public BruteForcePanel() {
+        // Empty constructor for Spring
+    }
+    
+    @PostConstruct
+    private void init() {
+        loadFXML(root);
+    }
+    
+    public VBox getRoot() {
+        return root;
+    }
     
     @Override
     protected void onComponentLoaded() {
@@ -46,7 +63,6 @@ public class BruteForcePanel extends CyberSecComponent<VBox> {
         threadsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 10));
         
         stopBtn.setDisable(true);
-        outputArea.setStyle("-fx-font-family: 'Courier New', monospace;");
     }
     
     private void bindToServices() {

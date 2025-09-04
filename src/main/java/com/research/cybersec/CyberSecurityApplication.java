@@ -23,10 +23,9 @@ public class CyberSecurityApplication extends Application {
     public void start(Stage stage) {
         DashboardView dashboard = context.getBean(DashboardView.class);
         
-        Scene scene = new Scene(dashboard, 1400, 900);
-        scene.getStylesheets().add(getClass().getResource("/css/cybersec.css").toExternalForm());
+        Scene scene = new Scene(dashboard.getRoot(), 1400, 900);
         
-        stage.setTitle("🔬 Cyber Security Research Suite");
+        stage.setTitle("Cyber Security Research Suite");
         stage.setScene(scene);
         stage.setResizable(true);
         stage.show();

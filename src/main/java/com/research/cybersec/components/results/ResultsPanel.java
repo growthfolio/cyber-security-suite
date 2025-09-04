@@ -15,12 +15,15 @@ import javafx.scene.layout.VBox;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Component
 @Scope("prototype")
-public class ResultsPanel extends CyberSecComponent<VBox> {
+public class ResultsPanel extends CyberSecComponent {
+    
+    private final VBox root = new VBox();
     
     @FXML private TableView<AttackResult> resultsTable;
     @FXML private LineChart<String, Number> successChart;
@@ -33,6 +36,19 @@ public class ResultsPanel extends CyberSecComponent<VBox> {
     
     private final ObservableList<AttackResult> results = FXCollections.observableArrayList();
     private final XYChart.Series<String, Number> successSeries = new XYChart.Series<>();
+    
+    public ResultsPanel() {
+        // Empty constructor for Spring
+    }
+    
+    @PostConstruct
+    private void init() {
+        loadFXML(root);
+    }
+    
+    public VBox getRoot() {
+        return root;
+    }
     
     @Override
     protected void onComponentLoaded() {
@@ -88,9 +104,9 @@ public class ResultsPanel extends CyberSecComponent<VBox> {
                 } else {
                     setText(status);
                     if ("SUCCESS".equals(status)) {
-                        setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+                        setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
                     } else {
-                        setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
+                        setStyle("-fx-text-fill: red;");
                     }
                 }
             }

@@ -17,9 +17,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+
 @Component
 @Scope("prototype")
-public class DashboardView extends CyberSecComponent<BorderPane> {
+public class DashboardView extends CyberSecComponent {
+    
+    private final BorderPane root = new BorderPane();
     
     @FXML private TabPane mainTabs;
     @FXML private Label statusLabel;
@@ -32,6 +36,19 @@ public class DashboardView extends CyberSecComponent<BorderPane> {
     private BruteForcePanel bruteForcePanel;
     private ResultsPanel resultsPanel;
     
+    public DashboardView() {
+        // Empty constructor for Spring
+    }
+    
+    @PostConstruct
+    private void init() {
+        loadFXML(root);
+    }
+    
+    public BorderPane getRoot() {
+        return root;
+    }
+    
     @Override
     protected void onComponentLoaded() {
         initializeTabs();
@@ -42,10 +59,10 @@ public class DashboardView extends CyberSecComponent<BorderPane> {
         bruteForcePanel = context.getBean(BruteForcePanel.class);
         resultsPanel = context.getBean(ResultsPanel.class);
         
-        Tab bruteForceTab = new Tab("🔴 BruteForce", bruteForcePanel);
-        Tab keyloggerTab = new Tab("🎯 Keylogger", new Label("Keylogger Panel - Coming Soon"));
-        Tab androidTab = new Tab("🤖 Android", new Label("Android Panel - Coming Soon"));
-        Tab resultsTab = new Tab("📊 Results", resultsPanel);
+        Tab bruteForceTab = new Tab("BruteForce", bruteForcePanel.getRoot());
+        Tab keyloggerTab = new Tab("Keylogger", new Label("Keylogger Panel - Coming Soon"));
+        Tab androidTab = new Tab("Android", new Label("Android Panel - Coming Soon"));
+        Tab resultsTab = new Tab("Results", resultsPanel.getRoot());
         
         bruteForceTab.setClosable(false);
         keyloggerTab.setClosable(false);
