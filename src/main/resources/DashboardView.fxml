@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <VBox>
+            <MenuBar fx:id="menuBar">
+                <Menu text="File">
+                    <MenuItem text="New Project"/>
+                    <MenuItem text="Open Project"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Exit"/>
+                </Menu>
+                <Menu text="Tools">
+                    <MenuItem text="Settings"/>
+                    <MenuItem text="Preferences"/>
+                </Menu>
+                <Menu text="Reports">
+                    <MenuItem text="Generate Report"/>
+                    <MenuItem text="Export Results"/>
+                </Menu>
+                <Menu text="Help">
+                    <MenuItem text="Documentation"/>
+                    <MenuItem text="About"/>
+                </Menu>
+            </MenuBar>
+            
+            <ToolBar>
+                <Label text="🔬 Cyber Security Research Suite" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="statusLabel" text="Ready"/>
+                <Separator orientation="VERTICAL"/>
+                <ProgressBar fx:id="globalProgress" prefWidth="150"/>
+            </ToolBar>
+        </VBox>
+    </top>
+    
+    <center>
+        <TabPane fx:id="mainTabs" tabClosingPolicy="UNAVAILABLE">
+            <padding>
+                <Insets top="5" right="5" bottom="5" left="5"/>
+            </padding>
+        </TabPane>
+    </center>
+    
+    <bottom>
+        <ToolBar>
+            <Label text="Status: Ready"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="Cyber Security Research Suite v1.0.0"/>
+        </ToolBar>
+    </bottom>
+</fx:root>

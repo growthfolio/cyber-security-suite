@@ -1,0 +1,26 @@
+cybersec:
+  tools:
+    bruteforce:
+      path: "./tools/redteam-bruteforce/bin/redteam-bf"
+      config-dir: "./tools/redteam-bruteforce/config/"
+    keylogger:
+      path: "./tools/stealth-keylogger/bin/system-monitor"
+      log-dir: "./tools/stealth-keylogger/logs/"
+    android:
+      adb-path: "/usr/bin/adb"
+      apk-path: "./tools/android-monitor/app-debug.apk"
+  
+  ui:
+    theme: "dark"
+    auto-save: true
+    max-results: 10000
+    
+  reports:
+    output-dir: "./reports/"
+    auto-export: false
+    
+logging:
+  level:
+    com.research.cybersec: DEBUG
+    org.springframework: WARN
+    javafx: WARN

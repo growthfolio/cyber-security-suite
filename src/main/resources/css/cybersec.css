@@ -1,0 +1,153 @@
+/* Cyber Security Suite CSS */
+
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: #2b2b2b;
+    -fx-text-fill: #ffffff;
+}
+
+/* Tabs */
+.tab-pane {
+    -fx-tab-min-height: 35px;
+}
+
+.tab {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.tab:selected {
+    -fx-background-color: #4CAF50;
+}
+
+/* Buttons */
+.button {
+    -fx-background-radius: 5px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-opacity: 0.8;
+}
+
+/* Text Areas */
+.text-area {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: #00ff00;
+    -fx-font-family: "Courier New", monospace;
+}
+
+.text-area .content {
+    -fx-background-color: #1e1e1e;
+}
+
+/* Tables */
+.table-view {
+    -fx-background-color: #2b2b2b;
+    -fx-table-cell-border-color: #555555;
+}
+
+.table-view .column-header {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: #2b2b2b;
+    -fx-text-fill: #ffffff;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #4CAF50;
+}
+
+/* Progress Bars */
+.progress-bar {
+    -fx-accent: #4CAF50;
+}
+
+/* Charts */
+.chart {
+    -fx-background-color: #2b2b2b;
+}
+
+.chart-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.axis {
+    -fx-tick-label-fill: #ffffff;
+}
+
+.axis-label {
+    -fx-text-fill: #ffffff;
+}
+
+/* Menu Bar */
+.menu-bar {
+    -fx-background-color: #3c3c3c;
+}
+
+.menu {
+    -fx-text-fill: #ffffff;
+}
+
+.menu-item {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #ffffff;
+}
+
+.menu-item:focused {
+    -fx-background-color: #4CAF50;
+}
+
+/* Tool Bar */
+.tool-bar {
+    -fx-background-color: #3c3c3c;
+    -fx-border-color: #555555;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #ffffff;
+}
+
+/* Text Fields */
+.text-field {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #555555;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.text-field:focused {
+    -fx-border-color: #4CAF50;
+}
+
+/* Combo Boxes */
+.combo-box {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #ffffff;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #ffffff;
+}
+
+/* Spinners */
+.spinner {
+    -fx-background-color: #3c3c3c;
+}
+
+.spinner .text-field {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #ffffff;
+}

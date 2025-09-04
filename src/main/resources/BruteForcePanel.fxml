@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root type="javafx.scene.layout.VBox" spacing="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    
+    <Label text="🔴 BruteForce Attack Configuration" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints minWidth="100" prefWidth="120"/>
+            <ColumnConstraints minWidth="200" prefWidth="300"/>
+            <ColumnConstraints minWidth="100" prefWidth="120"/>
+            <ColumnConstraints minWidth="200" prefWidth="300"/>
+        </columnConstraints>
+        
+        <Label text="Profile:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="profileCombo" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        
+        <Label text="Protocol:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="protocolCombo" prefWidth="200" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+        
+        <Label text="Target:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="targetField" promptText="192.168.1.100 or domain.com" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        
+        <Label text="Threads:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <Spinner fx:id="threadsSpinner" prefWidth="200" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+    </GridPane>
+    
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="startBtn" text="🚀 Start Attack" onAction="#startAttack" 
+                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Button fx:id="stopBtn" text="⏹ Stop" onAction="#stopAttack" 
+                style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Button text="🗑 Clear" onAction="#clearOutput" 
+                style="-fx-background-color: #FF9800; -fx-text-fill: white;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Progress:"/>
+        <ProgressBar fx:id="attackProgress" prefWidth="200"/>
+    </HBox>
+    
+    <Label text="Attack Output:" style="-fx-font-weight: bold;"/>
+    <TextArea fx:id="outputArea" prefRowCount="25" editable="false" 
+              style="-fx-font-family: 'Courier New', monospace; -fx-font-size: 12px;"
+              VBox.vgrow="ALWAYS"/>
+</fx:root>
