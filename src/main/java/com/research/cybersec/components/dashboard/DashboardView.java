@@ -2,6 +2,8 @@ package com.research.cybersec.components.dashboard;
 
 import com.research.cybersec.components.base.CyberSecComponent;
 import com.research.cybersec.components.bruteforce.BruteForcePanel;
+import com.research.cybersec.components.keylogger.KeyloggerPanel;
+import com.research.cybersec.components.android.AndroidPanel;
 import com.research.cybersec.components.results.ResultsPanel;
 import com.research.cybersec.services.ProcessManager;
 import javafx.application.Platform;
@@ -34,6 +36,8 @@ public class DashboardView extends CyberSecComponent {
     @Autowired private ApplicationContext context;
     
     private BruteForcePanel bruteForcePanel;
+    private KeyloggerPanel keyloggerPanel;
+    private AndroidPanel androidPanel;
     private ResultsPanel resultsPanel;
     
     public DashboardView() {
@@ -57,11 +61,13 @@ public class DashboardView extends CyberSecComponent {
     
     private void initializeTabs() {
         bruteForcePanel = context.getBean(BruteForcePanel.class);
+        keyloggerPanel = context.getBean(KeyloggerPanel.class);
+        androidPanel = context.getBean(AndroidPanel.class);
         resultsPanel = context.getBean(ResultsPanel.class);
         
         Tab bruteForceTab = new Tab("BruteForce", bruteForcePanel.getRoot());
-        Tab keyloggerTab = new Tab("Keylogger", new Label("Keylogger Panel - Coming Soon"));
-        Tab androidTab = new Tab("Android", new Label("Android Panel - Coming Soon"));
+        Tab keyloggerTab = new Tab("Keylogger", keyloggerPanel.getRoot());
+        Tab androidTab = new Tab("Android", androidPanel.getRoot());
         Tab resultsTab = new Tab("Results", resultsPanel.getRoot());
         
         bruteForceTab.setClosable(false);
