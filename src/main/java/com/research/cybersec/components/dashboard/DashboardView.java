@@ -5,6 +5,7 @@ import com.research.cybersec.components.bruteforce.BruteForcePanel;
 import com.research.cybersec.components.keylogger.KeyloggerPanel;
 import com.research.cybersec.components.android.AndroidPanel;
 import com.research.cybersec.components.results.ResultsPanel;
+import com.research.cybersec.security.SecurityPanel;
 import com.research.cybersec.services.ProcessManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -38,6 +39,7 @@ public class DashboardView extends CyberSecComponent {
     private BruteForcePanel bruteForcePanel;
     private KeyloggerPanel keyloggerPanel;
     private AndroidPanel androidPanel;
+    private SecurityPanel securityPanel;
     private ResultsPanel resultsPanel;
     
     public DashboardView() {
@@ -63,11 +65,13 @@ public class DashboardView extends CyberSecComponent {
         bruteForcePanel = context.getBean(BruteForcePanel.class);
         keyloggerPanel = context.getBean(KeyloggerPanel.class);
         androidPanel = context.getBean(AndroidPanel.class);
+        securityPanel = context.getBean(SecurityPanel.class);
         resultsPanel = context.getBean(ResultsPanel.class);
         
         Tab bruteForceTab = new Tab("BruteForce", bruteForcePanel.getRoot());
         Tab keyloggerTab = new Tab("Keylogger", keyloggerPanel.getRoot());
         Tab androidTab = new Tab("Android", androidPanel.getRoot());
+        Tab securityTab = new Tab("Security", securityPanel.getRoot());
         Tab resultsTab = new Tab("Results", resultsPanel.getRoot());
         
         bruteForceTab.setClosable(false);
@@ -75,7 +79,7 @@ public class DashboardView extends CyberSecComponent {
         androidTab.setClosable(false);
         resultsTab.setClosable(false);
         
-        mainTabs.getTabs().addAll(bruteForceTab, keyloggerTab, androidTab, resultsTab);
+        mainTabs.getTabs().addAll(bruteForceTab, keyloggerTab, androidTab, securityTab, resultsTab);
         
         // Connect panels
         bruteForcePanel.setResultsPanel(resultsPanel);
