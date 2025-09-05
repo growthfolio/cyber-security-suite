@@ -30,6 +30,12 @@
         
         <Label text="Threads:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
         <Spinner fx:id="threadsSpinner" prefWidth="200" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+        
+        <Label text="WiFi Network:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
+            <ComboBox fx:id="wifiNetworkCombo" onAction="#selectWifiNetwork" promptText="Scan for networks..." HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+            <Button fx:id="scanWifiBtn" text="📡 Scan WiFi" onAction="#scanWifiNetworks" />
+        </HBox>
     </GridPane>
     
     <HBox spacing="10" alignment="CENTER_LEFT">
