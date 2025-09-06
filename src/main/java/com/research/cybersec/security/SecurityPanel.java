@@ -78,24 +78,33 @@ public class SecurityPanel extends CyberSecComponent {
     }
     
     private void initializeSecurityEngine() {
-        Map<String, Object> status = securityEngine.getSecurityStatus();
-        
-        StringBuilder statusText = new StringBuilder("Security Engine Status:\n");
-        status.forEach((key, value) -> 
-            statusText.append(String.format("- %s: %s\n", key, value))
-        );
-        
-        detectionResults.setText(statusText.toString());
-        securityStatusLabel.setText("Ready");
-        
-        // Initialize crypto context
-        cryptoContext = securityEngine.createCryptoContext();
-        testCryptoBtn.setDisable(false);
-        
-        // Initialize polymorphic context with dummy code
-        byte[] dummyCode = "DUMMY_CODE_FOR_TESTING".getBytes();
-        polymorphicContext = securityEngine.createPolymorphicContext(dummyCode);
-        generateVariantBtn.setDisable(false);
+        // Lazy initialization to prevent startup CPU spike
+        Platform.runLater(() -> {
+            try {
+                Map<String, Object> status = securityEngine.getSecurityStatus();
+                
+                StringBuilder statusText = new StringBuilder("Security Engine Status:\n");
+                status.forEach((key, value) -> 
+                    statusText.append(String.format("- %s: %s\n", key, value))
+                );
+                
+                detectionResults.setText(statusText.toString());
+                securityStatusLabel.setText("Ready");
+                
+                // Initialize crypto context (lightweight)
+                cryptoContext = securityEngine.createCryptoContext();
+                testCryptoBtn.setDisable(false);
+                
+                // Initialize polymorphic context with small dummy code
+                byte[] dummyCode = "TEST".getBytes();
+                polymorphicContext = securityEngine.createPolymorphicContext(dummyCode);
+                generateVariantBtn.setDisable(false);
+                
+            } catch (Exception e) {
+                System.err.println("Security engine initialization failed: " + e.getMessage());
+                securityStatusLabel.setText("Initialization Failed");
+            }
+        });
     }
     
     @FXML

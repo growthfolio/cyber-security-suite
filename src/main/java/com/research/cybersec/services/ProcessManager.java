@@ -145,10 +145,14 @@ public class ProcessManager {
     }
     
     private void updateProgress(String line) {
+        // Throttle progress updates to reduce CPU usage
         if (line.contains("Trying") || line.contains("[*]")) {
             double currentProgress = progress.get();
             if (currentProgress < 0.95) {
-                progress.set(currentProgress + 0.01);
+                // Update progress less frequently
+                if (Math.random() < 0.1) { // Only 10% of the time
+                    progress.set(currentProgress + 0.05);
+                }
             }
         }
     }

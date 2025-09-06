@@ -43,18 +43,27 @@ public class WiFiScanner {
     public CompletableFuture<List<WiFiNetwork>> scanNetworks() {
         return CompletableFuture.supplyAsync(() -> {
             try {
+                Thread.currentThread().setName("WiFi-Scanner");
                 String os = System.getProperty("os.name").toLowerCase();
                 
+                log.info("Starting real WiFi scan for OS: {}", os);
+                
                 if (os.contains("linux")) {
-                    return scanLinux();
+                    List<WiFiNetwork> realNetworks = scanLinuxReal();
+                    if (!realNetworks.isEmpty()) {
+                        log.info("Found {} real WiFi networks on Linux", realNetworks.size());
+                        return realNetworks;
+                    }
                 } else if (os.contains("windows")) {
-                    return scanWindows();
-                } else if (os.contains("mac")) {
-                    return scanMacOS();
-                } else {
-                    log.warn("Unsupported OS for WiFi scanning: {}", os);
-                    return generateMockNetworks();
+                    List<WiFiNetwork> realNetworks = scanWindowsReal();
+                    if (!realNetworks.isEmpty()) {
+                        log.info("Found {} real WiFi networks on Windows", realNetworks.size());
+                        return realNetworks;
+                    }
                 }
+                
+                log.warn("Real WiFi scan failed or no networks found, using mock data");
+                return generateMockNetworks();
                 
             } catch (Exception e) {
                 log.error("WiFi scan failed", e);
@@ -63,43 +72,55 @@ public class WiFiScanner {
         });
     }
     
-    private List<WiFiNetwork> scanLinux() {
+    private List<WiFiNetwork> scanLinuxReal() {
         List<WiFiNetwork> networks = new ArrayList<>();
         
         try {
-            // Try nmcli first (NetworkManager)
+            // Try nmcli first with timeout
             ProcessBuilder pb = new ProcessBuilder("nmcli", "-t", "-f", 
-                "SSID,BSSID,MODE,CHAN,FREQ,RATE,SIGNAL,BARS,SECURITY", "dev", "wifi");
+                "SSID,BSSID,MODE,CHAN,FREQ,RATE,SIGNAL,BARS,SECURITY", "dev", "wifi", "list");
+            pb.redirectErrorStream(true);
+            
             Process process = pb.start();
             
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    WiFiNetwork network = parseNmcliOutput(line);
-                    if (network != null) {
-                        networks.add(network);
+            // Set timeout to prevent hanging
+            boolean finished = process.waitFor(10, java.util.concurrent.TimeUnit.SECONDS);
+            if (!finished) {
+                process.destroyForcibly();
+                log.warn("nmcli command timed out");
+                return new ArrayList<>();
+            }
+            
+            if (process.exitValue() == 0) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        WiFiNetwork network = parseNmcliOutput(line);
+                        if (network != null && !network.getSsid().isEmpty()) {
+                            networks.add(network);
+                        }
                     }
                 }
             }
             
+            // If nmcli failed, try iwconfig as fallback
             if (networks.isEmpty()) {
-                // Fallback to iwlist
-                networks = scanWithIwlist();
+                networks = scanWithIwconfig();
             }
             
         } catch (Exception e) {
-            log.error("Linux WiFi scan failed", e);
-            return generateMockNetworks();
+            log.error("Linux WiFi scan failed: {}", e.getMessage());
         }
         
         return networks;
     }
     
-    private List<WiFiNetwork> scanWithIwlist() {
+    private List<WiFiNetwork> scanWithIwconfig() {
         List<WiFiNetwork> networks = new ArrayList<>();
         
         try {
-            ProcessBuilder pb = new ProcessBuilder("sudo", "iwlist", "scan");
+            // Try iwconfig without sudo first
+            ProcessBuilder pb = new ProcessBuilder("iwconfig");
             Process process = pb.start();
             
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -109,7 +130,7 @@ public class WiFiScanner {
                     output.append(line).append("\n");
                 }
                 
-                networks = parseIwlistOutput(output.toString());
+                networks = parseIwconfigOutput(output.toString());
             }
             
         } catch (Exception e) {
@@ -119,41 +140,31 @@ public class WiFiScanner {
         return networks;
     }
     
-    private List<WiFiNetwork> scanWindows() {
+    private List<WiFiNetwork> scanWindowsReal() {
         List<WiFiNetwork> networks = new ArrayList<>();
         
         try {
-            ProcessBuilder pb = new ProcessBuilder("netsh", "wlan", "show", "profiles");
+            // Scan for available networks with timeout
+            ProcessBuilder pb = new ProcessBuilder("netsh", "wlan", "show", "available");
+            pb.redirectErrorStream(true);
+            
             Process process = pb.start();
             
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (line.contains("All User Profile")) {
-                        String ssid = line.split(":")[1].trim();
-                        WiFiNetwork network = new WiFiNetwork();
-                        network.setSsid(ssid);
-                        network.setBssid("00:00:00:00:00:00");
-                        network.setChannel(6);
-                        network.setSignalStrength(-60);
-                        network.setSecurity("WPA2");
-                        network.setFrequency("2.4GHz");
-                        networks.add(network);
-                    }
+            boolean finished = process.waitFor(15, java.util.concurrent.TimeUnit.SECONDS);
+            if (!finished) {
+                process.destroyForcibly();
+                log.warn("netsh command timed out");
+                return new ArrayList<>();
+            }
+            
+            if (process.exitValue() == 0) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    networks = parseNetshAvailableOutput(reader);
                 }
             }
             
-            // Get available networks
-            pb = new ProcessBuilder("netsh", "wlan", "show", "available");
-            process = pb.start();
-            
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                networks.addAll(parseNetshOutput(reader));
-            }
-            
         } catch (Exception e) {
-            log.error("Windows WiFi scan failed", e);
-            return generateMockNetworks();
+            log.error("Windows WiFi scan failed: {}", e.getMessage());
         }
         
         return networks;
@@ -205,6 +216,36 @@ public class WiFiScanner {
         return network;
     }
     
+    private List<WiFiNetwork> parseIwconfigOutput(String output) {
+        List<WiFiNetwork> networks = new ArrayList<>();
+        
+        // Parse iwconfig output for basic WiFi interface info
+        String[] lines = output.split("\n");
+        for (String line : lines) {
+            if (line.contains("IEEE 802.11") && line.contains("ESSID:")) {
+                WiFiNetwork network = new WiFiNetwork();
+                
+                // Extract ESSID
+                int essidStart = line.indexOf("ESSID:\"") + 7;
+                int essidEnd = line.indexOf("\"", essidStart);
+                if (essidStart > 6 && essidEnd > essidStart) {
+                    network.setSsid(line.substring(essidStart, essidEnd));
+                    network.setBssid("00:00:00:00:00:00"); // iwconfig doesn't show BSSID
+                    network.setChannel(6); // Default
+                    network.setSignalStrength(-60); // Default
+                    network.setSecurity("Unknown");
+                    network.setFrequency("2.4GHz");
+                    
+                    if (!network.getSsid().isEmpty()) {
+                        networks.add(network);
+                    }
+                }
+            }
+        }
+        
+        return networks;
+    }
+    
     private List<WiFiNetwork> parseIwlistOutput(String output) {
         List<WiFiNetwork> networks = new ArrayList<>();
         
@@ -250,6 +291,60 @@ public class WiFiScanner {
             if (network.getSsid() != null && !network.getSsid().isEmpty()) {
                 networks.add(network);
             }
+        }
+        
+        return networks;
+    }
+    
+    private List<WiFiNetwork> parseNetshAvailableOutput(BufferedReader reader) {
+        List<WiFiNetwork> networks = new ArrayList<>();
+        
+        try {
+            String line;
+            WiFiNetwork currentNetwork = null;
+            
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                
+                if (line.startsWith("SSID") && line.contains(":")) {
+                    if (currentNetwork != null && !currentNetwork.getSsid().isEmpty()) {
+                        networks.add(currentNetwork);
+                    }
+                    currentNetwork = new WiFiNetwork();
+                    String ssid = line.substring(line.indexOf(":") + 1).trim();
+                    currentNetwork.setSsid(ssid);
+                    currentNetwork.setBssid(generateRandomMAC());
+                    currentNetwork.setFrequency("2.4GHz");
+                } else if (currentNetwork != null) {
+                    if (line.startsWith("Signal") && line.contains(":")) {
+                        String signal = line.substring(line.indexOf(":") + 1).trim().replace("%", "");
+                        try {
+                            int signalPercent = Integer.parseInt(signal);
+                            currentNetwork.setSignalStrength(-100 + signalPercent);
+                        } catch (NumberFormatException e) {
+                            currentNetwork.setSignalStrength(-70);
+                        }
+                    } else if (line.startsWith("Authentication") && line.contains(":")) {
+                        String auth = line.substring(line.indexOf(":") + 1).trim();
+                        currentNetwork.setSecurity(auth);
+                    } else if (line.startsWith("Channel") && line.contains(":")) {
+                        String channel = line.substring(line.indexOf(":") + 1).trim();
+                        try {
+                            currentNetwork.setChannel(Integer.parseInt(channel));
+                        } catch (NumberFormatException e) {
+                            currentNetwork.setChannel(6);
+                        }
+                    }
+                }
+            }
+            
+            // Add the last network
+            if (currentNetwork != null && !currentNetwork.getSsid().isEmpty()) {
+                networks.add(currentNetwork);
+            }
+            
+        } catch (Exception e) {
+            log.error("Error parsing netsh output", e);
         }
         
         return networks;

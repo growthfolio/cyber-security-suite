@@ -186,21 +186,110 @@ public class AdvancedSecurityEngine {
     }
     
     private boolean detectVmJava() {
-        String osName = System.getProperty("os.name", "").toLowerCase();
-        String vmName = System.getProperty("java.vm.name", "").toLowerCase();
-        
-        return vmName.contains("server") && 
-               (osName.contains("linux") && Runtime.getRuntime().availableProcessors() <= 2);
+        try {
+            int vmIndicators = 0;
+            
+            // Check system properties
+            String osName = System.getProperty("os.name", "").toLowerCase();
+            String vmName = System.getProperty("java.vm.name", "").toLowerCase();
+            String userName = System.getProperty("user.name", "").toLowerCase();
+            
+            if (vmName.contains("server") || userName.contains("vm")) vmIndicators++;
+            
+            // Check CPU cores (VMs often have limited cores)
+            int cores = Runtime.getRuntime().availableProcessors();
+            if (cores <= 2) vmIndicators++;
+            
+            // Check total memory (VMs often have limited RAM)
+            long totalMemory = Runtime.getRuntime().totalMemory();
+            if (totalMemory < 2L * 1024 * 1024 * 1024) vmIndicators++; // Less than 2GB
+            
+            // Check system timezone (VMs often use UTC)
+            String timezone = System.getProperty("user.timezone", "");
+            if (timezone.contains("UTC") || timezone.contains("GMT")) vmIndicators++;
+            
+            // Check MAC address via network interfaces
+            try {
+                java.util.Enumeration<java.net.NetworkInterface> interfaces = 
+                    java.net.NetworkInterface.getNetworkInterfaces();
+                while (interfaces.hasMoreElements()) {
+                    java.net.NetworkInterface ni = interfaces.nextElement();
+                    byte[] mac = ni.getHardwareAddress();
+                    if (mac != null && mac.length == 6) {
+                        // Check for VM MAC prefixes
+                        String macStr = String.format("%02x:%02x:%02x", mac[0], mac[1], mac[2]);
+                        if (macStr.equals("00:05:69") || // VMware
+                            macStr.equals("00:0c:29") || // VMware
+                            macStr.equals("00:50:56") || // VMware
+                            macStr.equals("08:00:27")) { // VirtualBox
+                            vmIndicators += 2;
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore network interface errors
+            }
+            
+            return vmIndicators >= 2;
+            
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     private boolean detectSandboxJava() {
-        return System.getProperty("user.name", "").toLowerCase().contains("sandbox") ||
-               System.getProperty("user.home", "").toLowerCase().contains("analysis");
+        try {
+            int sandboxIndicators = 0;
+            
+            String userName = System.getProperty("user.name", "").toLowerCase();
+            String userHome = System.getProperty("user.home", "").toLowerCase();
+            String tmpDir = System.getProperty("java.io.tmpdir", "").toLowerCase();
+            
+            // Check for sandbox-related names
+            if (userName.contains("sandbox") || userName.contains("analysis") || 
+                userName.contains("malware") || userName.contains("virus")) {
+                sandboxIndicators += 2;
+            }
+            
+            if (userHome.contains("analysis") || userHome.contains("sandbox") ||
+                tmpDir.contains("sandbox")) {
+                sandboxIndicators++;
+            }
+            
+            // Check for common sandbox files
+            String[] sandboxFiles = {
+                "/tmp/analysis", "/tmp/sandbox", "/opt/cuckoo",
+                "C:\\analysis", "C:\\sandbox", "C:\\malware"
+            };
+            
+            for (String path : sandboxFiles) {
+                if (new java.io.File(path).exists()) {
+                    sandboxIndicators++;
+                    break;
+                }
+            }
+            
+            // Check uptime (sandboxes often have short uptime)
+            long uptime = java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime();
+            if (uptime < 5 * 60 * 1000) { // Less than 5 minutes
+                sandboxIndicators++;
+            }
+            
+            return sandboxIndicators >= 2;
+            
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     private boolean detectDebuggerJava() {
-        return java.lang.management.ManagementFactory.getRuntimeMXBean()
-                .getInputArguments().toString().contains("jdwp");
+        try {
+            return java.lang.management.ManagementFactory.getRuntimeMXBean()
+                    .getInputArguments().toString().contains("jdwp");
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     private void obfuscateCode(byte[] code) {
@@ -252,20 +341,42 @@ public class AdvancedSecurityEngine {
     }
     
     private byte[] encryptAesGcmJava(CryptoContext context, byte[] plaintext, byte[] aad) {
-        byte[] ciphertext = new byte[plaintext.length];
-        byte[] keystream = new byte[plaintext.length];
-        
-        secureRandom.setSeed(ByteBuffer.wrap(context.getKey()).getLong());
-        secureRandom.nextBytes(keystream);
-        
-        for (int i = 0; i < plaintext.length; i++) {
-            ciphertext[i] = (byte) (plaintext[i] ^ keystream[i]);
+        try {
+            // Real AES-256-GCM implementation
+            javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding");
+            javax.crypto.spec.SecretKeySpec keySpec = new javax.crypto.spec.SecretKeySpec(context.getKey(), "AES");
+            javax.crypto.spec.GCMParameterSpec gcmSpec = new javax.crypto.spec.GCMParameterSpec(128, context.getIv());
+            
+            cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
+            
+            if (aad != null) {
+                cipher.updateAAD(aad);
+            }
+            
+            byte[] ciphertext = cipher.doFinal(plaintext);
+            
+            // Extract authentication tag (last 16 bytes)
+            int tagStart = ciphertext.length - 16;
+            context.tag = new byte[16];
+            System.arraycopy(ciphertext, tagStart, context.tag, 0, 16);
+            
+            // Return ciphertext without tag
+            byte[] result = new byte[tagStart];
+            System.arraycopy(ciphertext, 0, result, 0, tagStart);
+            
+            log.debug("Real AES-256-GCM encryption completed");
+            return result;
+            
+        } catch (Exception e) {
+            log.error("Real AES-GCM encryption failed, falling back to XOR", e);
+            
+            // Fallback to simple XOR if real crypto fails
+            byte[] ciphertext = new byte[plaintext.length];
+            for (int i = 0; i < plaintext.length; i++) {
+                ciphertext[i] = (byte) (plaintext[i] ^ context.getKey()[i % context.getKey().length]);
+            }
+            return ciphertext;
         }
-        
-        context.tag = new byte[16];
-        secureRandom.nextBytes(context.tag);
-        
-        return ciphertext;
     }
     
     public Map<String, Object> getSecurityStatus() {
