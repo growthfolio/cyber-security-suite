@@ -21,4 +21,10 @@ public class AttackResult {
     private Long responseTime;
     private String banner;
     private String error;
+    
+    // Compatibility methods
+    public String getErrorMessage() { return error; }
+    public void setErrorMessage(String error) { this.error = error; }
+    public int getResponseTime() { return responseTime != null ? responseTime.intValue() : 0; }
+    public void setResponseTime(int responseTime) { this.responseTime = (long) responseTime; }
 }

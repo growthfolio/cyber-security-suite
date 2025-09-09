@@ -1,0 +1,145 @@
+/* Cyber Security Suite Dark Theme */
+.root {
+    -fx-base: #2b2b2b;
+    -fx-background: #1e1e1e;
+    -fx-control-inner-background: #3c3c3c;
+    -fx-accent: #0078d4;
+    -fx-focus-color: #0078d4;
+    -fx-text-fill: #ffffff;
+}
+
+.label {
+    -fx-text-fill: #ffffff;
+}
+
+.button {
+    -fx-background-color: #0078d4;
+    -fx-text-fill: white;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+}
+
+.button:hover {
+    -fx-background-color: #106ebe;
+}
+
+.button:pressed {
+    -fx-background-color: #005a9e;
+}
+
+.button:disabled {
+    -fx-background-color: #404040;
+    -fx-text-fill: #808080;
+}
+
+.text-area {
+    -fx-control-inner-background: #1e1e1e;
+    -fx-text-fill: #00ff00;
+    -fx-font-family: "Consolas", "Monaco", monospace;
+    -fx-font-size: 12px;
+}
+
+.combo-box {
+    -fx-background-color: #3c3c3c;
+}
+
+.text-field {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #ffffff;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #2b2b2b;
+}
+
+.tab {
+    -fx-background-color: #404040;
+}
+
+.tab:selected {
+    -fx-background-color: #0078d4;
+}
+
+/* Table styling */
+.table-view {
+    -fx-background-color: #2b2b2b;
+    -fx-border-color: #404040;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #404040;
+}
+
+.table-view .column-header {
+    -fx-background-color: #404040;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #606060;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-cell {
+    -fx-background-color: #2b2b2b;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #404040;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #0078d4;
+    -fx-text-fill: #ffffff;
+}
+
+/* Status indicators */
+.status-secure {
+    -fx-text-fill: #00ff00;
+    -fx-font-weight: bold;
+}
+
+.status-vulnerable {
+    -fx-text-fill: #ff4444;
+    -fx-font-weight: bold;
+}
+
+.status-suspicious {
+    -fx-text-fill: #ffaa00;
+    -fx-font-weight: bold;
+}
+
+.status-scanning {
+    -fx-text-fill: #4488ff;
+    -fx-font-weight: bold;
+}
+
+/* Loading states */
+.progress-indicator {
+    -fx-progress-color: #0078d4;
+}
+
+.scan-status-success {
+    -fx-text-fill: #00ff00;
+    -fx-font-weight: bold;
+}
+
+.scan-status-error {
+    -fx-text-fill: #ff4444;
+    -fx-font-weight: bold;
+}
+
+.scan-status-warning {
+    -fx-text-fill: #ffaa00;
+    -fx-font-weight: bold;
+}
+
+.scan-status-info {
+    -fx-text-fill: #4488ff;
+    -fx-font-weight: bold;
+}
+
+/* Cancel button styling */
+.cancel-button {
+    -fx-background-color: #ff4444;
+    -fx-text-fill: #ffffff;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #ff6666;
+}

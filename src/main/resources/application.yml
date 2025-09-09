@@ -1,10 +1,10 @@
 cybersec:
   tools:
     bruteforce:
-      path: "./tools/redteam-bruteforce/bin/redteam-bf"
+      path: "./tools/redteam-bruteforce/bin/redteam-bf-real"
       config-dir: "./tools/redteam-bruteforce/config/"
     keylogger:
-      path: "./tools/stealth-keylogger/bin/system-monitor"
+      path: "./tools/stealth-keylogger/bin/optimized-keylogger"
       log-dir: "./tools/stealth-keylogger/logs/"
     android:
       adb-path: "/usr/bin/adb"

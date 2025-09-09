@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox spacing="10.0" styleClass="control-bar">
+         <children>
+            <Label text="Platform:" />
+            <ComboBox fx:id="platformCombo" prefWidth="120.0" />
+            <Button fx:id="startBtn" onAction="#startKeylogger" styleClass="start-button" text="Start Keylogger" />
+            <Button fx:id="stopBtn" onAction="#stopKeylogger" styleClass="stop-button" text="Stop" />
+            <Button onAction="#clearOutput" styleClass="clear-button" text="Clear" />
+            <Button onAction="#exportLogs" styleClass="export-button" text="Export" />
+            <Button onAction="#optimizePerformance" styleClass="optimize-button" text="Optimize" />
+         </children>
+      </HBox>
+      
+      <HBox spacing="20.0" styleClass="status-bar">
+         <children>
+            <VBox spacing="5.0">
+               <children>
+                  <Label fx:id="statusLabel" styleClass="status-label" text="Ready" />
+                  <ProgressBar fx:id="captureProgress" prefWidth="200.0" />
+               </children>
+            </VBox>
+            <VBox spacing="5.0">
+               <children>
+                  <Label fx:id="eventsLabel" styleClass="metric-label" text="Events: 0" />
+                  <Label fx:id="performanceLabel" styleClass="metric-label" text="Performance: 0 events/sec" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      
+      <SplitPane dividerPositions="0.6" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+         <items>
+            <VBox>
+               <children>
+                  <Label styleClass="section-header" text="Real-time Performance Monitor" />
+                  <LineChart fx:id="performanceChart" animated="false" createSymbols="false" VBox.vgrow="ALWAYS">
+                     <xAxis>
+                        <NumberAxis fx:id="xAxis" label="Time (seconds)" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis fx:id="yAxis" label="Events per second" />
+                     </yAxis>
+                  </LineChart>
+               </children>
+            </VBox>
+            <VBox>
+               <children>
+                  <Label styleClass="section-header" text="Keylogger Output" />
+                  <TextArea fx:id="outputArea" editable="false" styleClass="output-area" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+         </items>
+      </SplitPane>
+   </children>
+</VBox>
