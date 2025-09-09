@@ -1,0 +1,119 @@
+/* Codex Raziel CS - Professional Dark Theme */
+
+.root {
+    -fx-base: #1e1e1e;
+    -fx-background: #1e1e1e;
+    -fx-control-inner-background: #2d2d2d;
+    -fx-control-inner-background-alt: #3d3d3d;
+    -fx-accent: #00ff00;
+    -fx-default-button: #00ff00;
+    -fx-focus-color: #00ff00;
+    -fx-faint-focus-color: #00ff0022;
+    -fx-text-fill: #ffffff;
+}
+
+/* Icon styling */
+.icon-button {
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+}
+
+.icon-button .ikonli-font-icon {
+    -fx-icon-size: 14px;
+    -fx-fill: -fx-text-fill;
+}
+
+.security-icon {
+    -fx-icon-color: #00FF00;
+}
+
+.warning-icon {
+    -fx-icon-color: #FFA500;
+}
+
+.error-icon {
+    -fx-icon-color: #FF4444;
+}
+
+.info-icon {
+    -fx-icon-color: #00BFFF;
+}
+
+/* Tab icons */
+.tab .tab-label .ikonli-font-icon {
+    -fx-icon-size: 16px;
+    -fx-fill: #CCCCCC;
+}
+
+.tab:selected .tab-label .ikonli-font-icon {
+    -fx-fill: #00FF00;
+}
+
+/* Button icons */
+.button .ikonli-font-icon {
+    -fx-icon-size: 14px;
+    -fx-fill: #FFFFFF;
+}
+
+.button:hover .ikonli-font-icon {
+    -fx-fill: #00FF00;
+}
+
+/* Label icons */
+.label .ikonli-font-icon {
+    -fx-icon-size: 16px;
+    -fx-fill: #CCCCCC;
+}
+
+/* Status colors */
+.status-secure {
+    -fx-text-fill: #00FF00;
+    -fx-font-weight: bold;
+}
+
+.status-vulnerable {
+    -fx-text-fill: #FF4444;
+    -fx-font-weight: bold;
+}
+
+.status-suspicious {
+    -fx-text-fill: #FFA500;
+    -fx-font-weight: bold;
+}
+
+.status-scanning {
+    -fx-text-fill: #00BFFF;
+    -fx-font-weight: bold;
+}
+
+/* Professional styling */
+.toolbar {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #404040;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view {
+    -fx-background-color: #2d2d2d;
+    -fx-table-cell-border-color: #404040;
+}
+
+.table-view .column-header {
+    -fx-background-color: #3d3d3d;
+    -fx-text-fill: #ffffff;
+}
+
+.text-area {
+    -fx-control-inner-background: #1e1e1e;
+    -fx-text-fill: #00ff00;
+    -fx-font-family: "Consolas", "Monaco", monospace;
+}
+
+.progress-bar .bar {
+    -fx-background-color: #00ff00;
+}
+
+.separator .line {
+    -fx-border-color: #404040;
+}
