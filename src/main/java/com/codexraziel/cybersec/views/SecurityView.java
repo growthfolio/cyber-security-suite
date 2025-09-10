@@ -47,9 +47,9 @@ public class SecurityView {
         
         // Control buttons
         HBox securityControls = new HBox(10);
-        Button checkPermissionsBtn = new Button("SCAN Check Permissions");
-        Button viewAuditLogBtn = new Button("LIST View Audit Log");
-        Button clearAuditBtn = new Button("TRASH Clear Audit");
+        Button checkPermissionsBtn = new Button("Check Permissions");
+        Button viewAuditLogBtn = new Button("View Audit Log");
+        Button clearAuditBtn = new Button("Clear Audit");
         
         securityControls.getChildren().addAll(checkPermissionsBtn, viewAuditLogBtn, clearAuditBtn);
         
@@ -86,13 +86,13 @@ public class SecurityView {
             new Label("Security Dashboard"),
             statusGrid,
             new Separator(),
-            new Label("PANEL Security Controls:"),
+            new Label("Security Controls:"),
             securityControls,
             new Separator(),
-            new Label("LIST Permission Details:"),
+            new Label("Permission Details:"),
             permissionDetails,
             new Separator(),
-            new Label("LOG Security Audit Log:"),
+            new Label("Security Audit Log:"),
             auditLogViewer
         );
         
@@ -127,7 +127,7 @@ public class SecurityView {
                                    TextArea permissionDetails, Label statusLabel) {
         
         permissionDetails.clear();
-        permissionDetails.appendText("SCAN Checking system permissions...\\n\\n");
+        permissionDetails.appendText("Checking system permissions...\\n\\n");
         
         // Check network permissions
         PermissionManager.PermissionCheckResult networkResult = permissionManager.checkNetworkPermissions();
@@ -162,9 +162,9 @@ public class SecurityView {
             PermissionManager.PermissionCheckResult toolResult = permissionManager.checkToolAvailability(tool);
             if (toolResult.isSuccess()) {
                 availableTools++;
-                permissionDetails.appendText("  OK " + tool + " - Available\\n");
+                permissionDetails.appendText("  ✓ " + tool + " - Available\\n");
             } else {
-                permissionDetails.appendText("  ERROR " + tool + " - " + toolResult.getMessage() + "\\n");
+                permissionDetails.appendText("  ✗ " + tool + " - " + toolResult.getMessage() + "\\n");
                 if (toolResult.getSuggestion() != null) {
                     permissionDetails.appendText("     → " + toolResult.getSuggestion() + "\\n");
                 }
@@ -188,8 +188,8 @@ public class SecurityView {
     }
     
     private void updateStatusLabel(Label label, String prefix, PermissionManager.PermissionCheckResult result) {
-        label.setText(prefix + ": " + (result.isSuccess() ? "OK Available" : 
-                     result.isWarning() ? "WARN Limited" : "ERROR Unavailable"));
+        label.setText(prefix + ": " + (result.isSuccess() ? "Available" : 
+                     result.isWarning() ? "Limited" : "Unavailable"));
         
         if (result.isSuccess()) {
             label.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
@@ -205,15 +205,15 @@ public class SecurityView {
         // Quick status update without detailed output
         PermissionManager.SystemPermissionStatus status = permissionManager.getSystemPermissionStatus();
         
-        networkStatusLabel.setText("Network Access: " + (status.isNetworkAccess() ? "OK Available" : "ERROR Unavailable"));
-        wifiStatusLabel.setText("WiFi Access: " + (status.isWifiAccess() ? "OK Available" : "ERROR Unavailable"));
-        sudoStatusLabel.setText("Sudo Access: " + (status.isSudoAccess() ? "OK Available" : "WARN Limited"));
+        networkStatusLabel.setText("Network Access: " + (status.isNetworkAccess() ? "Available" : "Unavailable"));
+        wifiStatusLabel.setText("WiFi Access: " + (status.isWifiAccess() ? "Available" : "Unavailable"));
+        sudoStatusLabel.setText("Sudo Access: " + (status.isSudoAccess() ? "Available" : "Limited"));
         toolsStatusLabel.setText(String.format("Tools Available: %d", status.getToolsAvailable()));
     }
     
     private void loadAuditLog(TextArea auditLogViewer) {
         auditLogViewer.clear();
-        auditLogViewer.appendText("LIST Security Audit Log\\n");
+        auditLogViewer.appendText("Security Audit Log\\n");
         auditLogViewer.appendText("===================\\n\\n");
         
         try {
@@ -258,10 +258,10 @@ public class SecurityView {
                         java.nio.file.Files.delete(auditPath);
                         auditLogger.logUserAction("AUDIT_LOG_CLEARED", "Security audit", "Log cleared by user");
                         auditLogViewer.clear();
-                        auditLogViewer.appendText("OK Audit log cleared successfully.\\n");
+                        auditLogViewer.appendText("✓ Audit log cleared successfully.\\n");
                     }
                 } catch (Exception e) {
-                    auditLogViewer.appendText("ERROR Error clearing audit log: " + e.getMessage() + "\\n");
+                    auditLogViewer.appendText("✗ Error clearing audit log: " + e.getMessage() + "\\n");
                 }
             }
         });

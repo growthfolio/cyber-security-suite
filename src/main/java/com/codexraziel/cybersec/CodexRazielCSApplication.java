@@ -6,6 +6,7 @@ import com.codexraziel.cybersec.views.WiFiView;
 import com.codexraziel.cybersec.views.PerformanceView;
 import com.codexraziel.cybersec.views.SecurityView;
 import com.codexraziel.cybersec.views.ToolsView;
+import com.codexraziel.cybersec.views.WorkflowView;
 import com.codexraziel.cybersec.ui.CodexIcons;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -97,6 +98,12 @@ public class CodexRazielCSApplication extends Application {
         ToolsView toolsView = context.getBean(ToolsView.class);
         toolsTab.setContent(toolsView.createView(statusLabel));
         
+        Tab workflowTab = new Tab("Red Team Workflows");
+        workflowTab.setGraphic(CodexIcons.createIcon("PLAY"));
+        WorkflowView workflowView = context.getBean(WorkflowView.class);
+        workflowView.initialize();
+        workflowTab.setContent(workflowView);
+        
         // Results Tab (simple for now)
         Tab resultsTab = new Tab("Results");
         resultsTab.setGraphic(CodexIcons.RESULTS);
@@ -155,7 +162,7 @@ public class CodexRazielCSApplication extends Application {
         );
         resultsTab.setContent(resultsContent);
         
-        tabs.getTabs().addAll(keyloggerTab, bruteforceTab, wifiTab, performanceTab, securityTab, toolsTab, resultsTab);
+        tabs.getTabs().addAll(keyloggerTab, bruteforceTab, wifiTab, workflowTab, performanceTab, securityTab, toolsTab, resultsTab);
         tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         
         // Main content area

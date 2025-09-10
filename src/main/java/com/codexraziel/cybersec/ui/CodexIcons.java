@@ -29,6 +29,11 @@ public class CodexIcons {
     public static final FontIcon DOWNLOAD = createIcon(FontAwesome.DOWNLOAD, 14, "#FFFFFF");
     public static final FontIcon FOLDER = createIcon(FontAwesome.FOLDER, 14, "#FFFFFF");
     
+    // Icon constants for workflow
+    public static final String PLAY_ICON = "PLAY";
+    public static final String PAUSE_ICON = "PAUSE";
+    public static final String STOP_ICON = "STOP";
+    
     // Status Icons
     public static final FontIcon SUCCESS = createIcon(FontAwesome.CHECK_CIRCLE, 12, "#00FF00");
     public static final FontIcon WARNING = createIcon(FontAwesome.EXCLAMATION_TRIANGLE, 12, "#FFA500");
@@ -41,6 +46,15 @@ public class CodexIcons {
     
     public static FontIcon createSecurityIcon(int size, Color color) {
         return FontIcon.of(FontAwesome.SHIELD, size, color);
+    }
+    
+    public static FontIcon createIcon(String iconName) {
+        return switch (iconName) {
+            case "PLAY" -> createIcon(FontAwesome.PLAY, 14, "#00FF00");
+            case "PAUSE" -> createIcon(FontAwesome.PAUSE, 14, "#FFA500");
+            case "STOP" -> createIcon(FontAwesome.STOP, 14, "#FF4444");
+            default -> createIcon(FontAwesome.CIRCLE, 14, "#FFFFFF");
+        };
     }
     
     public static FontIcon createNetworkStatusIcon(String status, int size) {

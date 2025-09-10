@@ -253,11 +253,11 @@ public class PermissionManager {
         
         public String getStatusSummary() {
             if (isFullyOperational()) {
-                return "OK All permissions available";
+                return "All permissions available";
             } else if (networkAccess || wifiAccess) {
-                return "WARN Limited permissions - some features unavailable";
+                return "Limited permissions";
             } else {
-                return "ERROR Insufficient permissions - most features unavailable";
+                return "Insufficient permissions";
             }
         }
     }
