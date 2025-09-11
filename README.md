@@ -1,43 +1,46 @@
-# 🔬 Cyber Security Research Suite
 
-Professional JavaFX GUI for managing cyber security research tools with Spring Boot integration.
+# Cyber Security Research Suite
 
-## 🎯 Features
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17%2B-blue?style=flat-square&logo=java" alt="Java 17+"/>
+  <img src="https://img.shields.io/badge/Linux-Preferred-success?style=flat-square&logo=linux" alt="Linux Preferred"/>
+</p>
 
-- **🔴 BruteForce Management** - Control Red Team BruteForce attacks
-- **🎯 Keylogger Control** - Manage Stealth Keylogger operations  
-- **🤖 Android Monitor** - Control Android monitoring tools
-- **📊 Real-time Results** - Live charts and statistics
-- **⚙️ Configuration Management** - YAML-based profiles
-- **📈 Scientific Reports** - Export results for research
+<p align="center">
+  <b>Professional GUI for Scientific Cybersecurity Research</b><br>
+  <i>Modular, workflow-driven, and integrates real offensive tools</i>
+</p>
 
-## 🏗️ Architecture
+## Features
 
-- **JavaFX** with fx:root pattern for modular components
-- **Spring Boot** for dependency injection and configuration
-- **Lombok** for clean, concise code
-- **Real-time UI updates** with JavaFX Properties
+- BruteForce Management (Red Team)
+- Keylogger Control (Stealth, native C)
+- Android Monitor integration
+- Real-time results and statistics
+- YAML-based configuration profiles
+- Exportable scientific reports
 
-## 🚀 Quick Start
+## Architecture
 
-### Prerequisites
+- JavaFX (fx:root pattern, modular UI)
+- Spring Boot (dependency injection, config)
+- Lombok (clean code)
+- Real-time UI updates (JavaFX Properties)
+
+## Quick Start
+
+**Prerequisites:**
 - Java 17+
 - Maven 3.6+
-- Built cyber security tools in `tools/` directory
+- Built tools in `tools/` directory
 
-### Build & Run
+**Build & Run:**
 ```bash
-# Build the application
 mvn clean compile
-
-# Run with JavaFX
-mvn javafx:run
-
-# Or run with Spring Boot
-mvn spring-boot:run
+mvn javafx:run   # or: mvn spring-boot:run
 ```
 
-## 📁 Project Structure
+## Project Structure (Simplified)
 
 ```
 cyber-security-suite/
@@ -62,25 +65,7 @@ cyber-security-suite/
     └── android-monitor/
 ```
 
-## 🎨 UI Components
-
-### Dashboard
-- Tabbed interface for each tool
-- Global status and progress monitoring
-- Menu system for configuration
-
-### BruteForce Panel
-- Attack configuration (target, protocol, threads)
-- Real-time output with syntax highlighting
-- Progress tracking and control buttons
-
-### Results Panel
-- Tabular results with filtering
-- Success rate charts over time
-- Protocol distribution pie charts
-- Export functionality
-
-## ⚙️ Configuration
+## Configuration
 
 Edit `src/main/resources/application.yml`:
 
@@ -95,7 +80,7 @@ cybersec:
       adb-path: "/usr/bin/adb"
 ```
 
-## 🔧 Development
+## Development
 
 ### Adding New Components
 1. Extend `CyberSecComponent<T>`
@@ -117,7 +102,7 @@ public class MyPanel extends CyberSecComponent<VBox> {
 }
 ```
 
-## 📊 Integration
+## Integration
 
 The GUI integrates with existing tools via:
 - **Process execution** and output monitoring
@@ -125,7 +110,7 @@ The GUI integrates with existing tools via:
 - **Real-time result parsing** and display
 - **Status monitoring** and control
 
-## 🎓 Scientific Use
+## Scientific Use
 
 Perfect for:
 - **Red Team training** and exercises
@@ -133,17 +118,17 @@ Perfect for:
 - **Academic research** in cybersecurity
 - **Tool demonstration** and education
 
-## ⚠️ Legal Notice
 
-This software is intended **EXCLUSIVELY** for:
-- 🎓 Academic cybersecurity research
-- 🔵 Blue Team training (detection and response)
-- 🔴 Red Team training (evasion techniques)
-- 🧪 Scientific analysis of system behavior
-- 📚 Educational purposes in controlled environments
+> This software is intended **EXCLUSIVELY** for:
+> - Academic cybersecurity research
+> - Blue Team/Red Team training (in labs)
+> - Scientific analysis and education
+> - Controlled, authorized environments only
 
-**🚨 DO NOT USE FOR ILLEGAL ACTIVITIES! 🚨**
+**Never use for illegal activities.**
 
 ---
 
-**🔬 Professional GUI for Scientific Cybersecurity Research** ⚡
+<p align="center">
+  <i>Discreet, modular, and research-focused.</i>
+</p>
