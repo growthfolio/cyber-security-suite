@@ -34,6 +34,36 @@ public enum AttackScenario {
             new WorkflowStep("persistence", "Maintain Persistence", false),
             new WorkflowStep("data_exfiltration", "Data Collection", false),
             new WorkflowStep("cleanup", "Evidence Cleanup", false)
+        )),
+    
+    // ===== WiFi Attack Workflows =====
+    WIFI_PASSWORD_ATTACK("WiFi Password Cracking", 
+        Arrays.asList(
+            new WorkflowStep("wifi_interface_setup", "Configure Monitor Mode", true),
+            new WorkflowStep("wifi_network_scan", "Discover Networks", true),
+            new WorkflowStep("wifi_target_selection", "Select Target", false),
+            new WorkflowStep("wifi_handshake_capture", "Capture Handshake", true),
+            new WorkflowStep("wifi_dictionary_attack", "Dictionary Attack", true),
+            new WorkflowStep("wifi_result_analysis", "Analyze Results", false)
+        )),
+
+    ADVANCED_WIFI_PENETRATION("Advanced WiFi Testing",
+        Arrays.asList(
+            new WorkflowStep("wifi_comprehensive_scan", "Full Network Analysis", true),
+            new WorkflowStep("wifi_vulnerability_assessment", "Check WPS/Weak Encryption", true),
+            new WorkflowStep("wifi_multi_vector_attack", "Multi-Attack Strategy", true),
+            new WorkflowStep("wifi_gpu_acceleration", "GPU Cracking", false),
+            new WorkflowStep("wifi_post_compromise", "Post-Attack Analysis", false)
+        )),
+
+    WIFI_RED_TEAM("WiFi Red Team Engagement",
+        Arrays.asList(
+            new WorkflowStep("wifi_target_profiling", "Target Reconnaissance", true),
+            new WorkflowStep("wifi_evil_twin_setup", "Evil Twin AP", true),
+            new WorkflowStep("wifi_credential_harvest", "Harvest Credentials", true),
+            new WorkflowStep("wifi_legitimate_compromise", "Compromise Real Network", true),
+            new WorkflowStep("wifi_lateral_movement", "Network Movement", false),
+            new WorkflowStep("wifi_cleanup", "Clean Evidence", false)
         ));
     
     private final String name;

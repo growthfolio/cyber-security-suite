@@ -111,6 +111,16 @@ The GUI integrates with existing tools via:
 - **Status monitoring** and control
 
 ## Scientific Use
+## Wordlists Credits
+
+This project includes public wordlists for research and testing purposes. All rights and credits belong to the original authors.
+
+- SecLists: https://github.com/danielmiessler/SecLists
+- RockYou: 2009 leak
+- BitQuark Subdomains: https://github.com/bitquark-subdomains
+- RAFT: https://github.com/danielmiessler/RAFT
+
+See also: `wordlists/CREDITS.txt`
 
 Perfect for:
 - **Red Team training** and exercises

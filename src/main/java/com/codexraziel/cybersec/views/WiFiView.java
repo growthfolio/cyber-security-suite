@@ -21,7 +21,7 @@ public class WiFiView {
         // Scan controls with loading state
         HBox scanControls = new HBox(10);
         Button scanBtn = new Button("Scan Networks");
-        scanBtn.setGraphic(CodexIcons.SEARCH);
+        scanBtn.setGraphic(CodexIcons.WIFI);
         Button refreshBtn = new Button("Refresh");
         refreshBtn.setGraphic(CodexIcons.REFRESH);
         Button cancelBtn = new Button("Cancel");

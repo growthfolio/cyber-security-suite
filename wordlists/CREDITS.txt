@@ -1,0 +1,29 @@
+# Wordlists Credits
+
+Este projeto utiliza wordlists públicas e reconhecidas para fins de pesquisa e testes de segurança. Todos os direitos e créditos pertencem aos autores originais.
+
+## Fontes principais
+
+- SecLists: https://github.com/danielmiessler/SecLists
+- RockYou: Vazamento histórico de 2009
+- BitQuark Subdomains: https://github.com/bitquark-subdomains
+- RAFT: https://github.com/danielmiessler/RAFT
+- Outras listas públicas e coletâneas de wordlists open-source
+
+Se você for o autor de alguma lista e desejar atribuição adicional ou remoção, entre em contato.
+
+---
+
+# Wordlists Credits (English)
+
+This project uses public and well-known wordlists for research and security testing purposes. All rights and credits belong to the original authors.
+
+## Main Sources
+
+- SecLists: https://github.com/danielmiessler/SecLists
+- RockYou: 2009 historical leak
+- BitQuark Subdomains: https://github.com/bitquark-subdomains
+- RAFT: https://github.com/danielmiessler/RAFT
+- Other public/open-source wordlist collections
+
+If you are the author of any list and would like additional attribution or removal, please contact us.

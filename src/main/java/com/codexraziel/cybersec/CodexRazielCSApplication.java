@@ -46,8 +46,21 @@ public class CodexRazielCSApplication extends Application {
         
         Button settingsBtn = new Button("Settings");
         settingsBtn.setGraphic(FontIcon.of(FontAwesome.COG, 14));
+        settingsBtn.setTooltip(new Tooltip("Open application settings"));
+        settingsBtn.setOnAction(e -> {
+            com.codexraziel.cybersec.views.dialogs.SettingsDialog settingsDialog = 
+                new com.codexraziel.cybersec.views.dialogs.SettingsDialog(primaryStage);
+            settingsDialog.showDialog();
+        });
+        
         Button aboutBtn = new Button("About");
         aboutBtn.setGraphic(CodexIcons.INFO);
+        aboutBtn.setTooltip(new Tooltip("About this application"));
+        aboutBtn.setOnAction(e -> {
+            com.codexraziel.cybersec.views.dialogs.AboutDialog aboutDialog = 
+                new com.codexraziel.cybersec.views.dialogs.AboutDialog(primaryStage);
+            aboutDialog.showDialog();
+        });
         
         Region spacer = new Region();
         spacer.setMaxWidth(Double.MAX_VALUE);
