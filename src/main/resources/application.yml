@@ -1,5 +1,22 @@
+spring:
+  application:
+    name: cyber-security-suite
+  
+  # JavaFX doesn't use embedded server by default
+  main:
+    web-application-type: none
+
 cybersec:
   tools:
+    aircrack-ng:
+      path: /usr/bin/aircrack-ng
+      timeout-seconds: 300
+    hashcat:
+      path: /usr/bin/hashcat
+      timeout-seconds: 7200
+    hydra:
+      path: /usr/bin/hydra
+      timeout-seconds: 3600
     bruteforce:
       path: "./tools/redteam-bruteforce/bin/redteam-bf-real"
       config-dir: "./tools/redteam-bruteforce/config/"
@@ -18,9 +35,55 @@ cybersec:
   reports:
     output-dir: "./reports/"
     auto-export: false
+  
+  reporting:
+    output-dir: ./reports
+    auto-generate: true
+  
+  keylogger:
+    buffer-size: 10000
+    auto-save: false
+  
+  packet-capture:
+    buffer-size: 1000
+    snapshot-length: 65536
+  
+  kismet:
+    url: http://localhost:2501
+    api-key: ${KISMET_API_KEY:}
+    timeout-seconds: 30
     
 logging:
   level:
-    com.research.cybersec: DEBUG
+    root: INFO
+    com.codexraziel.cybersec: DEBUG
     org.springframework: WARN
     javafx: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/cybersec.log
+    max-size: 10MB
+    max-history: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: production
