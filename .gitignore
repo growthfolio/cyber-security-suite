@@ -1,81 +1,36 @@
-# Compiled class files
+# Build artifacts
+target/
 *.class
-
-# Log files
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files
 *.jar
 *.war
-*.nar
 *.ear
-*.zip
-*.tar.gz
-*.rar
 
-# Virtual machine crash logs
-hs_err_pid*
-
-# IDE files
+# IDE
 .idea/
 *.iml
 .vscode/
-.eclipse/
+.settings/
+.project
+.classpath
 
-# Build directories
-target/
-build/
-out/
-
-# OS generated files
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Large wordlists (>50MB) - Download separately
-wordlists/passwords/rockyou.txt
-wordlists/usernames/10m-usernames.txt
-wordlists/**/*-large.txt
-wordlists/**/*-huge.txt
-wordlists/**/*.txt
-wordlists/**/*.lst
-wordlists/**/*.dict
-
-# Backup files
-*.bak
-*.backup
-*.tmp
-
-# Security sensitive files
-*.key
-*.pem
-*.p12
-*.pfx
-keys/
-certificates/
-
-# Results and logs
-results/
+# Logs
 logs/
-*.db
-*.sqlite
-*.sqlite3
+*.log
 
-# Temporary files
-temp/
-tmp/
-*.temp
+# Results
+results/
+captures/
+wordlists/*.txt
 
-# Scripts that shouldn't be committed
-fix_large_files.sh
-commit_changes.sh
+# Sensitive
+*.cap
+*.hc22000
+*.pcap
+
+# Temp
+/tmp/
+*.tmp
