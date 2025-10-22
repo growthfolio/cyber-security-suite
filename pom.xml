@@ -6,11 +6,11 @@
 
     <groupId>com.codexraziel</groupId>
     <artifactId>codex-raziel-cs</artifactId>
-    <version>1.0.0</version>
+    <version>0.2.0-beta</version>
     <packaging>jar</packaging>
 
     <name>Codex Raziel CS</name>
-    <description>Professional Cybersecurity Research Suite</description>
+    <description>Professional Cybersecurity Research Suite - Beta Phase</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
